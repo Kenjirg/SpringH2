@@ -30,7 +30,7 @@ public class SignService {
 
 	public String signUp(User user) {// 註冊會員
 		System.out.println("進svc註冊");
-		String result=null;
+//		String result=null;
 		// 檢查Email
 		if (!emailVali(user.getEmail())) {//若格式錯誤
 			System.out.println("email錯誤");
@@ -48,29 +48,29 @@ public class SignService {
 		return "註冊完成";
 	}
 
-//	public User signIn(User inUser) {
-//		User dbUser = null;
-//		String dbCode = null;
-//		String inCode = null;
-//
-//		// DAO DB to take the User
-//		dbUser = userRepository.readUser(inUser);
-//		System.out.println("read is");
-//		dbCode = dbUser.getPassword();
-//		System.out.println("dbCode: " + dbCode);
-//
-//		// encode to get inCode
-//		System.out.println("sign in is");
-//		inCode = encode(inUser.getPassword());
-//		System.out.println("inCode: " + inCode);
-//
-//		// 比對
-//		if (dbCode.equals(inCode)) {// 密碼正確
-//			System.out.println("code right");
-//			return dbUser;
-//		}
-//		return null;// 密碼錯誤
-//	}
+	public User signIn(User inUser) {
+		User dbUser = null;
+		String dbCode = null;
+		String inCode = null;
+
+		// do DAO to take the User
+		dbUser = userRepository.readUser(inUser);
+		System.out.println("read is");
+		dbCode = dbUser.getPassword();
+		System.out.println("dbCode: " + dbCode);
+
+		// encode to get inCode
+		System.out.println("sign in is");
+		inCode = encode(inUser.getPassword());
+		System.out.println("inCode: " + inCode);
+
+		// 比對
+		if (dbCode.equals(inCode)) {// 密碼正確
+			System.out.println("code right");
+			return dbUser;
+		}
+		return null;// 密碼錯誤
+	}
 
 //	public String ckUsername(String username) {
 //		if(userRepository.findUsername(username)) {
@@ -79,24 +79,24 @@ public class SignService {
 //		return "此帳號尚未註冊，可使用。";
 //	}
 	
-//	public void sendEmail(String username){
+	public void sendEmail(String username){
 //		User user=new User();
-//		//提取EMAIL
-//		String email =userRepository.findEmail(username);
-//		System.out.println("取得"+email);
-//		//產生新密碼
-//		String newCode=randomPass();
-//		System.out.println("新CODE是"+newCode);
-//		//encode放入DB
-//		String putToDbCode= encode(newCode);
-//		System.out.println("放入DB的是"+putToDbCode);
-//		
-//		user.setUsername(username);
-//		user.setPassword(putToDbCode);
-//		System.out.println("放置新密碼結果: "+ userRepository.putNewCode(user));
-//		//寄出
-//		doSend(email,newCode);
-//	}
+		//提取EMAIL
+		User newCodeUser =userRepository.findEmail(username);
+		System.out.println("取得"+newCodeUser.getEmail());
+		//產生新密碼
+		String newCode=randomPass();
+		System.out.println("新CODE是"+newCode);
+		//encode放入DB
+		String putToDbCode= encode(newCode);
+		System.out.println("會放入DB的是"+putToDbCode);
+		newCodeUser.setUsername(username);
+		newCodeUser.setPassword(putToDbCode);
+		System.out.println(newCodeUser);
+		System.out.println("放置新密碼結果: "+ userRepository.putNewCode(newCodeUser));
+		//寄出
+		doSend(newCodeUser.getEmail(),newCode);
+	}
 	
 	public void doSend(String to,String newCode) {
 		Properties props = System.getProperties();
@@ -128,13 +128,13 @@ public class SignService {
 		}
 	}
 
-	private Boolean emailVali(String email) {// 檢查email
+	private Boolean emailVali(String email) {// 檢查email格式
 		String regexEmail = "^\\w{1,20}@[a-zA-Z0-9]{2,10}\\.[a-zA-Z]{2,10}(\\.[a-zA-Z]{2,10})?$";
 //		String test = "aaa@somewhere.com";
 		return email.matches(regexEmail);
 	}
 	
-	private String randomPass() {
+	private String randomPass() {//產生新密碼
 		Random random=new Random();
 		Integer num=random.nextInt(9999)+1;
 		String newCode=String.valueOf(num);
